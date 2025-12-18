@@ -1,0 +1,46 @@
+name: 'MoE_uncond'
+data:
+    type: 'RetouchingMulti'
+    lq_data_dir: 'data/multi'
+    lq_data_type: ['two','three','four']
+    hq_data_dir: 'data/multi/ori'
+    resolution: 1024
+    patch_size: 1024
+    num_workers: 4
+    ckpt_dir: 'ckpt/MoE/uncond'
+    conditional: False
+
+log_path: "log/MoE_uncond_log.txt"
+
+model:
+    num_expert: 4
+    out_channel: 3
+    white:
+        config_path: configs/RetouchingOne_white_uncond.yml
+        resume_path: ckpt/white/model_latest_white_uncond.pth.tar
+    face:
+        config_path: configs/RetouchingOne_face_uncond.yml
+        resume_path: ckpt/face/model_latest_face_uncond.pth.tar
+    eye:
+        config_path: configs/RetouchingOne_eye_uncond.yml
+        resume_path: ckpt/eye/model_latest_eye_uncond.pth.tar
+    smooth:
+        config_path: configs/RetouchingOne_smooth_uncond.yml
+        resume_path: ckpt/smooth/model_latest_smooth_uncond.pth.tar
+
+training:
+    batch_size: 8
+    n_epochs: 20
+    num_trainloader: 100000
+    validation_freq: 5000
+    num_val: 50
+
+optim:
+    weight_decay: 0.000
+    optimizer: "Adam"
+    lr: 0.0001
+    amsgrad: False
+    eps: 0.00000001
+    step_size: 50
+    gamma: 0.8
+
