@@ -114,7 +114,7 @@ class MoE_model(object):
                 x = x.flatten(start_dim=0, end_dim=1) if x.ndim == 5 else x
                 x = x.to(self.device)
                 self.step += 1
-                # 读取输入图像，并且确保是32的整数倍
+
                 x_gt = x[:,3:,:,:]
                 x_cond = x[:, :3, :, :]
                 b, c, h, w = x_cond.shape
@@ -123,6 +123,7 @@ class MoE_model(object):
                 x_cond = F.pad(x_cond, (0, img_w_32 - w, 0, img_h_32 - h), 'reflect')
                 
                 MoE_input = x_cond
+                # 使用gt标签的情况
                 if '0w' in name:
                     output_white = self.model_white(x,y[0])[:, :, :h, :w] - x_cond
                     MoE_input = torch.cat((MoE_input, output_white), dim=1)
@@ -253,18 +254,8 @@ class MoE_model(object):
                 else:
                     MoE_input = torch.cat((MoE_input,torch.zeros_like(x_cond)), dim=1)
                 
-                # print(MoE_input.shape) # torch.Size([16, 15, 1024, 1024])
                 pred_x = self.MoEmodel(MoE_input).to('cpu')
-                
-                # 增加测试PSNR的大小
-                # gt_x = x[:, 3:, :, :]
-                # input_x = x[:, :3, :, :]
-                # PSNR_pred = utils.calculate_psnr(pred_x,gt_x)
-                # PSNR_pred_list.append(PSNR_pred)
-                # PSNR_ori = utils.calculate_psnr(input_x,gt_x)
-                # # print(PSNR_ori)
-                # PSNR_list.append(PSNR_pred-PSNR_ori)
-                # print(gt_x.shape,input_x.shape,pred_x.shape)
+            
                 for ind in range(len(pred_x)):
                     PSNR_pred = PSNR(pred_x[ind].cpu().detach().numpy().transpose(1, 2, 0),gt_x[ind].cpu().detach().numpy().transpose(1, 2, 0))
                     PSNR_pred_list.append(PSNR_pred)
@@ -283,133 +274,6 @@ class MoE_model(object):
         self.MoEmodel.load_state_dict(checkpoint['state_dict'], strict=True)
         utils.logging.log("=> loaded checkpoint {}".format(resume),file_path=self.config.log_path)
     
-    
-    # ### 用gt的情况，实际通过detector
-    # def restore(self,test_loader):
-    #     # 读入并冻结模型
-    #     print("=> loading Experts")
-    #     self.load_expert_ckpt()
-        
-    #     print("=> loading MoE model")
-    #     if os.path.isfile(self.args.resume):
-    #         self.load_MoE_ckpt(self.args.resume)
-    #         self.MoEmodel.eval()
-    #     else:
-    #         print('Pre-trained diffusion model path is missing!')
-
-    #     image_folder = os.path.join(self.args.image_folder, self.args.test_name)
-        
-    #     total_samples = len(test_loader.dataset)
-    #     print(f"=> Test dataset num :{total_samples}")
-
-    #     with torch.no_grad():
-    #         utils.logging.log(f"Processing Test!",file_path=self.config.log_path)
-    #         for i, (x, y, name) in enumerate(test_loader):
-    #             if i >= 1:  # only apply our model to opt.num_test images.
-    #                 print("already evaluate num:",self.args.num_test)
-    #                 break
-    #             start_time = time.time()
-    #             # x = x.flatten(start_dim=0, end_dim=1) if x.ndim == 5 else x
-    #             x = x.to(self.device)
-    #             # self.step += 1
-    #             # 读取输入图像，并且确保是32的整数倍
-    #             gt_x = x[:,3:,:,:]
-    #             x_cond = x[:, :3, :, :]
-    #             b, c, h, w = x_cond.shape
-    #             img_h_32 = int(32 * np.ceil(h / 32.0))
-    #             img_w_32 = int(32 * np.ceil(w / 32.0))
-    #             x_cond = F.pad(x_cond, (0, img_w_32 - w, 0, img_h_32 - h), 'reflect')
-                
-    #             MoE_input = x_cond
-    #             if '0w' in name:
-    #                 output_white = self.model_white(x,y[0])[:, :, :h, :w] - x_cond
-    #                 MoE_input = torch.cat((MoE_input, output_white), dim=1)
-    #             else:
-    #                 MoE_input = torch.cat((MoE_input,torch.zeros_like(x_cond)), dim=1)
-    #             if '0s' in name:
-    #                 output_smooth = self.model_smooth(x,y[1])[:, :, :h, :w] - x_cond
-    #                 MoE_input = torch.cat((MoE_input, output_smooth), dim=1)
-    #             else:
-    #                 MoE_input = torch.cat((MoE_input,torch.zeros_like(x_cond)), dim=1)
-    #             if '0f' in name:
-    #                 output_face = self.model_face(x,y[2])[:, :, :h, :w] - x_cond
-    #                 MoE_input = torch.cat((MoE_input, output_face), dim=1)
-    #             else:
-    #                 MoE_input = torch.cat((MoE_input,torch.zeros_like(x_cond)), dim=1)
-    #             if '0e' in name:
-    #                 output_eye = self.model_eye(x,y[3])[:, :, :h, :w] - x_cond
-    #                 MoE_input = torch.cat((MoE_input, output_eye), dim=1)
-    #             else:
-    #                 MoE_input = torch.cat((MoE_input,torch.zeros_like(x_cond)), dim=1)
-                
-    #             # print(MoE_input.shape) # torch.Size([1, 15, 1024, 1024])
-    #             pred_x = self.MoEmodel(MoE_input).to('cpu')
-                
-    #             utils.logging.save_image(pred_x, os.path.join(image_folder,f"{name[0]}"))
-    #             print(f"processing image {name[0]}")
-    #             print(time.time()-start_time)
-    # ### 全用的情况
-    # def restore(self,test_loader):
-    #     # 读入并冻结模型
-    #     print("=> loading Experts")
-    #     self.load_expert_ckpt()
-        
-    #     print("=> loading MoE model")
-    #     if os.path.isfile(self.args.resume):
-    #         self.load_MoE_ckpt(self.args.resume)
-    #         self.MoEmodel.eval()
-    #     else:
-    #         print('Pre-trained diffusion model path is missing!')
-
-    #     image_folder = os.path.join(self.args.image_folder, self.args.test_name)
-        
-    #     total_samples = len(test_loader.dataset)
-    #     print(f"=> Test dataset num :{total_samples}")
-
-    #     with torch.no_grad():
-    #         utils.logging.log(f"Processing Test!",file_path=self.config.log_path)
-    #         for i, (x, y, name) in enumerate(test_loader):
-    #             start_time = time.time()
-    #             # x = x.flatten(start_dim=0, end_dim=1) if x.ndim == 5 else x
-    #             x = x.to(self.device)
-    #             # self.step += 1
-    #             # 读取输入图像，并且确保是32的整数倍
-    #             gt_x = x[:,3:,:,:]
-    #             x_cond = x[:, :3, :, :]
-    #             b, c, h, w = x_cond.shape
-    #             img_h_32 = int(32 * np.ceil(h / 32.0))
-    #             img_w_32 = int(32 * np.ceil(w / 32.0))
-    #             x_cond = F.pad(x_cond, (0, img_w_32 - w, 0, img_h_32 - h), 'reflect')
-                
-    #             MoE_input = x_cond
-
-    #             # device问题
-    #             self.model_white.to(self.device)
-                
-    #             # print(self.model_white(x)['pred_x'].shape)
-    #             # print(x_cond.shape)
-    #             output_white = self.model_white(x)['pred_x'] - x_cond
-    #             MoE_input = torch.cat((MoE_input, output_white), dim=1)
-
-    #             self.model_smooth.to(self.device)
-    #             output_smooth = self.model_smooth(x)['pred_x'] - x_cond
-    #             MoE_input = torch.cat((MoE_input, output_smooth), dim=1)
-
-    #             self.model_face.to(self.device)
-    #             output_face = self.model_face(x)['pred_x'] - x_cond
-    #             MoE_input = torch.cat((MoE_input, output_face), dim=1)
-
-    #             self.model_eye.to(self.device)
-    #             output_eye = self.model_eye(x)['pred_x'] - x_cond
-    #             MoE_input = torch.cat((MoE_input, output_eye), dim=1)
-
-                
-    #             # print(MoE_input.shape) # torch.Size([1, 15, 1024, 1024])
-    #             pred_x = self.MoEmodel(MoE_input).to('cpu')
-                
-    #             utils.logging.save_image(pred_x, os.path.join(image_folder,f"{name[0]}"))
-    #             print(f"processing image {name[0]}")
-    #             # print(time.time()-start_time)
     ### 保存多模型图片
     def restore(self,test_loader):
         # 读入专家模型
