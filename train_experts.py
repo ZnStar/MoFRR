@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-MoFRR 专家模型训练脚本
-用于训练四个专家模型（眼睛、脸部、美白、平滑）和MoE融合模型
-"""
 
 import os
 import sys
@@ -27,7 +23,7 @@ def check_environment():
             for i in range(torch.cuda.device_count()):
                 print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
         else:
-            print("警告: 未检测到CUDA，训练将使用CPU（非常慢）")
+            print("警告: 未检测到CUDA")
     except ImportError:
         print("警告: 无法导入PyTorch，请确保已正确安装")
         return False
@@ -127,7 +123,7 @@ def evaluate_models():
         ('configs/RetouchingOne_eye_uncond.yml', '眼睛专家'),
         ('configs/RetouchingOne_face_uncond.yml', '脸部专家'),
         ('configs/RetouchingOne_white_uncond.yml', '美白专家'),
-        ('configs/RetouchingOne_smooth_uncond.yml', '平滑专家')
+        ('configs/RetouchingOne_smooth_uncond.yml', '磨皮专家')
     ]
 
     print("评估专家模型...")
@@ -168,17 +164,17 @@ def main():
     if args.gpu:
         gpu_ids = [int(x.strip()) for x in args.gpu.split(',')]
 
-    # 第一阶段：训练专家模型
+    # 第一阶段
     if args.stage in ['1', 'all']:
         print("\n" + "=" * 50)
-        print("第一阶段: 训练四个专家模型")
+        print("第一阶段:训练")
         print("=" * 50)
 
         expert_configs = [
             ('configs/RetouchingOne_eye_uncond.yml', '眼睛'),
             ('configs/RetouchingOne_face_uncond.yml', '脸部'),
             ('configs/RetouchingOne_white_uncond.yml', '美白'),
-            ('configs/RetouchingOne_smooth_uncond.yml', '平滑')
+            ('configs/RetouchingOne_smooth_uncond.yml', '磨皮')
         ]
 
         success_count = 0
@@ -191,10 +187,10 @@ def main():
 
         print(f"\n专家模型训练完成: {success_count}/{len(expert_configs)} 成功")
 
-    # 第二阶段：MoE融合训练
+    # 第二阶段
     if args.stage in ['2', 'all']:
         print("\n" + "=" * 50)
-        print("第二阶段: MoE融合训练")
+        print("第二阶段训练")
         print("=" * 50)
 
         # 检查专家模型
