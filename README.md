@@ -28,11 +28,7 @@ pip install -r requirements.txt
 
 ### 数据下载
 
-- **百度网盘**: [https://pan.baidu.com/s/1XknBvf-YvEU7cDkcopos3g?pwd=51cf](https://pan.baidu.com/s/1XknBvf-YvEU7cDkcopos3g?pwd=51cf) (提取码: 51cf)
-- **Google Drive**: [https://drive.google.com/drive/folders/194Viqm8Xh8qleYf66kdSIcGVRupUOYvN?usp=sharing](https://drive.google.com/drive/folders/194Viqm8Xh8qleYf66kdSIcGVRupUOYvN?usp=sharing)
-
-
-请确保数据集路径在配置文件中正确设置。
+请下载[[数据使用申请表]](https://fdmas.github.io/Application_RetouchingFFHQ_new.pdf)，并按照表格要求填写并发送至相应邮箱获取数据集。
 
 
 
