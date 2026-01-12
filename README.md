@@ -30,13 +30,13 @@ pip install -r requirements.txt
 使用提供的 `train_experts.py` 脚本进行自动化训练：
 
 ```bash
-# 训练所有阶段（专家模型 + MoE融合）
+# 训练所有阶段
 python train_experts.py
 
-# 仅训练专家模型
+# 第一阶段训练
 python train_experts.py --stage 1
 
-# 仅训练MoE融合模型
+# 第二阶段训练
 python train_experts.py --stage 2
 ```
 
@@ -47,7 +47,7 @@ python train_experts.py --stage 2
 # 专家模型评估
 python evaluate.py --config configs/RetouchingOne_[expert].yml
 
-# MoE融合模型评估
+# FRR模型评估
 python MoE_test.py --config MoE/RetouchingOne_MoE_uncond.yml
 ```
 
@@ -59,12 +59,9 @@ python MoE_test.py --config MoE/RetouchingOne_MoE_uncond.yml
 ```
 @inproceedings{liu2025mofrr,
   title={MoFRR: Mixture of Diffusion Models for Face Retouching Restoration},
-  author={Liu, Shuaicheng and others},
+  author={Liu, Jiaxin and Ying, Qichao and Qian,Zhenxing and Li, Sheng and Zhang, Runqi and Liu, Jian and Zhang, Xinpeng},
   booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
   year={2025}
 }
 ```
 
-## 许可证
-
-本项目采用MIT许可证。
