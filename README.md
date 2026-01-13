@@ -1,60 +1,58 @@
 # MoFRR: Mixture of Diffusion Models for Face Retouching Restoration
 
-## 项目概述
+## Project Overview
 
-论文链接: [ICCV 2025 Paper](https://openaccess.thecvf.com/content/ICCV2025/papers/Liu_MoFRR_Mixture_of_Diffusion_Models_for_Face_Retouching_Restoration_ICCV_2025_paper.pdf)
+Paper Link: [ICCV 2025 Paper](https://openaccess.thecvf.com/content/ICCV2025/papers/Liu_MoFRR_Mixture_of_Diffusion_Models_for_Face_Retouching_Restoration_ICCV_2025_paper.pdf)
 
 
-## 数据获取
+## Dataset
 
-请下载[数据使用申请表](https://fdmas.github.io/Application_RetouchingFFHQ_new.pdf)，并按照表格要求填写并发送至相应邮箱获取数据集。
+Please download the [Application](https://fdmas.github.io/Application_RetouchingFFHQ_new.pdf), fill it out according to the instructions, and send it to the given email address to obtain the dataset.
 
-## 环境要求
+## Environment Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-主要依赖：
+Main Dependencies:
 - PyTorch >= 1.8.1
 - CUDA >= 10.2
 - OpenCV
 - NumPy
-- 其他依赖见 requirements.txt
 
+## Quick Start
 
-## 快速开始
+### Training
 
-### 训练
-
-使用提供的 `train_experts.py` 脚本进行自动化训练：
+Use the provided `train_experts.py` script for training:
 
 ```bash
-# 训练所有阶段
+# Train all stages
 python train_experts.py
 
-# 第一阶段训练
+# Train stage 1
 python train_experts.py --stage 1
 
-# 第二阶段训练
+# Train stage 2
 python train_experts.py --stage 2
 ```
 
-### 性能评估
+### Performance Evaluation
 
 
 ```bash
-# 专家模型评估
+# Evaluate expert models
 python evaluate.py --config configs/RetouchingOne_[expert].yml
 
-# FRR模型评估
+# Evaluate MoFRR
 python MoE_test.py --config MoE/RetouchingOne_MoE_uncond.yml
 ```
 
 
-## 引用
+## Citation
 
-如果您在研究中使用了本项目，请引用我们的论文：
+If you use this project in your research, please cite our paper:
 
 ```
 @inproceedings{liu2025mofrr,
