@@ -1,6 +1,6 @@
-# MoFRR: Mixture of Diffusion Models for Face Retouching Restoration
+# MoFRR
 
-Paper Link: [ICCV 2025 Paper](https://openaccess.thecvf.com/content/ICCV2025/papers/Liu_MoFRR_Mixture_of_Diffusion_Models_for_Face_Retouching_Restoration_ICCV_2025_paper.pdf)
+Paper Link: [MoFRR: Mixture of Diffusion Models for Face Retouching Restoration](https://openaccess.thecvf.com/content/ICCV2025/papers/Liu_MoFRR_Mixture_of_Diffusion_Models_for_Face_Retouching_Restoration_ICCV_2025_paper.pdf)
 
 
 ## Dataset
